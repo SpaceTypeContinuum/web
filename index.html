@@ -6,12 +6,16 @@
     <script src="assets/js/matter-0_14_2.min.js"></script>
     <script src="assets/js/sketches/blobs/point.js"></script>
     <script src="assets/js/sketches/blobs/sketch-generator.js"></script>
-    <script src="assets/js/sketches/blobs/sketch.js"></script>
+    <script src="assets/js/sketches/particle-fill/sketch-generator.js"></script>
+    <script src="assets/js/timer.js"></script>
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
     <meta charset="utf-8" />
 
   </head>
   <body>
-    <div id="canvas" class="full-vw full-vh"></div>
+    <div id="container" class="full-vw full-vh position-rel">
+      <div id="canvas" class="full-w full-h position-abs"></div>
+      <div id="swapCanvas" class="full-w full-h position-abs"></div>
+    </div>
   </body>
 </html>

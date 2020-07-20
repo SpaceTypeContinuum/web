@@ -1,5 +1,6 @@
 ParticleFill = {
-  createSketch: function(divId) {
+  targetBg: "black",
+  createSketch: function(divId, lastBg) {
     let sketch = function(p) {
       let Engine = Matter.Engine;
       let World = Matter.World;
@@ -26,6 +27,8 @@ ParticleFill = {
 
       let canvasMouseX
       let canvasMouseY
+
+      let bgColor, startingBgColor
       
       p.preload = function() {
         font = p.loadFont('assets/fonts/Raleway-Black.ttf')
@@ -41,7 +44,11 @@ ParticleFill = {
 
       p.setup = function() {
         let div = document.getElementById(divId)
-        p.createCanvas(div.offsetWidth, div.clientHeight)
+        let canvas = p.createCanvas(div.offsetWidth, div.clientHeight)
+
+        bgColor = p.color(0)
+        startingBgColor = lastBg ? p.color(lastBg) : bgColor
+
         textLayer = p.createGraphics(p.width, p.height)
         initSize = p.min(p.width, p.height)
         initX = p.width
@@ -145,7 +152,9 @@ ParticleFill = {
         canvasMouseX = (p.mouseX - p.width/2)/scale
         canvasMouseY = (p.mouseY - p.height/2)/scale
 
-        p.background(0);
+        let bgLerp = p.map(p.millis(), 0, 4000, 0, 1, true)
+        let bg = p.lerpColor(startingBgColor, bgColor, bgLerp)
+        p.background(bg);
         Engine.update(engine)
         p.translate(p.width/2, p.height/2)
         p.scale(scale)
@@ -154,6 +163,9 @@ ParticleFill = {
           pt.draw()
           pt.update()
         }
+
+        bg.setAlpha(255 - 255*bgLerp)
+        p.background(bg)
       }
 
       function doDrawShapeOnTextLayer(layer) {
@@ -263,8 +275,7 @@ ParticleFill = {
       }
 
       // Really silly hacky way to select a grid location for every particle
-      // that's somewhat close to them. If we can't find a close spot for them,
-      // give up and select one at random.
+      // that's somewhat close to them.
       function getDest(sx, sy) {
         let mx = p.map(sx, -initX/2, initX/2, textBounds.minX, textBounds.maxX)
         let my = p.map(sy, -initY/2, initY/2, textBounds.minY, textBounds.maxY)
