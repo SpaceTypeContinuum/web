@@ -24,6 +24,9 @@ ParticleFill = {
       let bounds
       let textBounds
 
+      let canvasMouseX
+      let canvasMouseY
+      
       p.preload = function() {
         font = p.loadFont('assets/fonts/Raleway-Black.ttf')
       }
@@ -118,8 +121,8 @@ ParticleFill = {
 
         let gridPtsCopy = JSON.parse(JSON.stringify(gridPts))
         while (gridPts.length > 0) {
-          let x = p.random(p.width) - p.width/2
-          let y = p.random(p.height) - p.height/2
+          let x = p.random(p.width) - initX/2
+          let y = p.random(p.height) - initY/2
           let dest = getDest(x, y)
           freeParticles.push(new Point(p, x, y,
                                        p.random(pointRadius, pointRadius*2), false, "PT", dest))
@@ -139,6 +142,9 @@ ParticleFill = {
       }
 
       p.draw = function() {
+        canvasMouseX = (p.mouseX - p.width/2)/scale
+        canvasMouseY = (p.mouseY - p.height/2)/scale
+
         p.background(0);
         Engine.update(engine)
         p.translate(p.width/2, p.height/2)
@@ -195,10 +201,6 @@ ParticleFill = {
         scale = Math.min(p.width, p.height) / initSize
       }
   
-      function refreshPoints() {
-        let oldFontSize = fontSize
-      }
-
       class Point {
         constructor(p, x, y, radius, isStatic = false, style = "LINE", dest) {
           this.p = p
@@ -231,18 +233,20 @@ ParticleFill = {
         }
 
         update() {
-          let d = this.p.dist(this.dest.x, this.dest.y, this.p.mouseX/scale, this.p.mouseY/scale)
+          let d = this.p.dist(this.dest.x, this.dest.y,
+                              canvasMouseX, canvasMouseY)
           if (d <= initSize / 20) {
             let maxm = initSize / 5
-            let v = this.p.createVector(this.body.position.x - this.p.mouseX/scale, this.body.position.y - this.p.mouseY/scale)
-
+            let v = this.p.createVector(
+              this.body.position.x - canvasMouseX,
+              this.body.position.y - canvasMouseY)
             let m = this.p.map(v.mag(), 0, maxm, 1, 0)
             v.setMag(m)
             Body.setVelocity(this.body, {
               x: v.x,
               y: v.y
             })
-          } else if (d < 15) {
+          } else if (d < initSize / 26) {
             Body.setVelocity(this.body, {
               x: this.body.velocity.x * 0.3,
               y: this.body.velocity.y * 0.3
