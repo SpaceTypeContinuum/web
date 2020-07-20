@@ -1,0 +1,12 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.full-vw {
+    width: 100vw;
+}
+
+.full-vh {
+    height: 100vh;
+}
