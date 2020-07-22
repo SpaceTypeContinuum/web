@@ -1,14 +1,16 @@
 html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .full-vw {
-    width: 100vw;
+    width: 100%;
 }
 
 .full-vh {
-    height: 100vh;
+    height: 100%;
 }
 
 .full-w {
@@ -23,13 +25,10 @@ html, body {
     position: relative;
 }
 
-.position-abs {
+canvas {
     position: absolute;
     top: 0;
     left: 0;
-}
-
-canvas {
     -webkit-animation-name: fadeIn;
     animation-name: fadeIn;
     -webkit-animation-duration: 4s;
