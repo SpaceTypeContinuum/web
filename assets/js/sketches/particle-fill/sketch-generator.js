@@ -1,6 +1,6 @@
 ParticleFill = {
   targetBg: "black",
-  createSketch: function(divId, lastBg) {
+  createSketch: function(divId) {
     let sketch = function(p) {
       let Engine = Matter.Engine;
       let World = Matter.World;
@@ -27,8 +27,6 @@ ParticleFill = {
 
       let canvasMouseX
       let canvasMouseY
-
-      let bgColor, startingBgColor
       
       p.preload = function() {
         font = p.loadFont('assets/fonts/Raleway-Black.ttf')
@@ -45,9 +43,6 @@ ParticleFill = {
       p.setup = function() {
         let div = document.getElementById(divId)
         let canvas = p.createCanvas(div.offsetWidth, div.clientHeight)
-
-        bgColor = p.color(0)
-        startingBgColor = lastBg ? p.color(lastBg) : bgColor
 
         textLayer = p.createGraphics(p.width, p.height)
         initSize = p.min(p.width, p.height)
@@ -152,9 +147,7 @@ ParticleFill = {
         canvasMouseX = (p.mouseX - p.width/2)/scale
         canvasMouseY = (p.mouseY - p.height/2)/scale
 
-        let bgLerp = p.map(p.millis(), 0, 4000, 0, 1, true)
-        let bg = p.lerpColor(startingBgColor, bgColor, bgLerp)
-        p.background(bg);
+        p.clear();
         Engine.update(engine)
         p.translate(p.width/2, p.height/2)
         p.scale(scale)
@@ -163,9 +156,6 @@ ParticleFill = {
           pt.draw()
           pt.update()
         }
-
-        bg.setAlpha(255 - 255*bgLerp)
-        p.background(bg)
       }
 
       function doDrawShapeOnTextLayer(layer) {

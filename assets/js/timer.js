@@ -8,16 +8,19 @@ let nextSketchType = 0
 let currentp5
 let nextp5
 
-function createSketch(startingBgColor) {
-    let currentSketch = sketches[nextSketchType].createSketch("canvas", startingBgColor)
+function createSketch() {
+    let currentSketch = sketches[nextSketchType].createSketch("canvas")
+    document.getElementById("container").style.background = sketches[nextSketchType].targetBg
     nextp5 = new p5(currentSketch, "canvas")
     lastSketchType = nextSketchType
     nextSketchType = (nextSketchType + 1) % sketches.length
 }
 
 function startCycle() {
-    createSketch(sketches[lastSketchType].targetBg)
-    setTimeout(completeCycle, 500)
+    currentp5._elements[0].canvas.style.background = sketches[lastSketchType].targetBg
+    createSketch()
+    currentp5._elements[0].canvas.classList.add("fade-out")
+    setTimeout(completeCycle, 3500)
  }
 
  function completeCycle() {

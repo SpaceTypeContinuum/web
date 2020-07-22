@@ -1,6 +1,6 @@
 Blobs = {
   targetBg: "#363636",
-  createSketch: function (divId, lastBg) {
+  createSketch: function (divId) {
     let sketch = function (p) {
       let Engine = Matter.Engine
       let World = Matter.World
@@ -21,8 +21,6 @@ Blobs = {
       let points
       let bounds
 
-      let bgColor, startingBgColor
-
       p.preload = function () {
         font = p.loadFont("assets/fonts/Raleway-Black.ttf")
       }
@@ -31,9 +29,6 @@ Blobs = {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
         p.textFont(font)
-
-        bgColor = p.color("#363636")
-        startingBgColor = lastBg ? p.color(lastBg) : bgColor
 
         engine = Engine.create()
         world = engine.world
@@ -48,16 +43,11 @@ Blobs = {
           lastWindowResize = null
         }
 
-        let bgLerp = p.map(p.millis(), 0, 2000, 0, 1, true)
-        let bg = p.lerpColor(startingBgColor, bgColor, bgLerp)
-        p.background(bg)
+        p.clear()
         p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
         Engine.update(engine)
         drawShape()
-
-        bg.setAlpha(255 - 255*bgLerp)
-        p.background(bg)
       }
 
       p.windowResized = function () {
