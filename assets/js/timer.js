@@ -17,9 +17,16 @@ function createSketch() {
 }
 
 function startCycle() {
-    currentp5._elements[0].canvas.style.background = sketches[lastSketchType].targetBg
+    let el
+    if (currentp5._elements[0].length > 0) {
+        el = currentp5._elements[0].canvas
+    } else {
+        el = document.querySelector("canvas:not([display=none])")
+    }
+    
+    el.style.background = sketches[lastSketchType].targetBg
+    el.classList.add("fade-out")
     createSketch()
-    currentp5._elements[0].canvas.classList.add("fade-out")
     setTimeout(completeCycle, 3500)
  }
 
