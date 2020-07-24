@@ -1,7 +1,7 @@
 Blobs = {
   targetBg: "#363636",
-  createSketch: function (divId) {
-    let sketch = function (p) {
+  createSketch: function(divId) {
+    let sketch = function(p) {
       let Engine = Matter.Engine
       let World = Matter.World
       let Bodies = Matter.Bodies
@@ -21,11 +21,11 @@ Blobs = {
       let points
       let bounds
 
-      p.preload = function () {
+      p.preload = function() {
         font = p.loadFont("assets/fonts/Raleway-Black.ttf")
       }
 
-      p.setup = function () {
+      p.setup = function() {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
         p.textFont(font)
@@ -37,8 +37,8 @@ Blobs = {
         refreshPoints()
       }
 
-      p.draw = function () {
-        if (lastWindowResize && (p.millis() - lastWindowResize > 200)) {
+      p.draw = function() {
+        if (lastWindowResize && p.millis() - lastWindowResize > 200) {
           refreshPoints()
           lastWindowResize = null
         }
@@ -50,11 +50,9 @@ Blobs = {
         drawShape()
       }
 
-      p.windowResized = function () {
+      p.windowResized = function() {
         let div = document.getElementById(divId)
-        p.resizeCanvas(
-          div.offsetWidth,
-          div.clientHeight)
+        p.resizeCanvas(div.offsetWidth, div.clientHeight)
 
         scale = Math.min(p.width, p.height) / initSize
         lastWindowResize = p.millis()

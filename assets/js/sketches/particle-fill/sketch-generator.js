@@ -2,13 +2,13 @@ ParticleFill = {
   targetBg: "black",
   createSketch: function(divId) {
     let sketch = function(p) {
-      let Engine = Matter.Engine;
-      let World = Matter.World;
-      let Body = Matter.Body;
-      let Bodies = Matter.Bodies;
+      let Engine = Matter.Engine
+      let World = Matter.World
+      let Body = Matter.Body
+      let Bodies = Matter.Bodies
 
-      let engine;
-      let world;
+      let engine
+      let world
 
       let drawShape = false
 
@@ -27,9 +27,9 @@ ParticleFill = {
 
       let canvasMouseX
       let canvasMouseY
-      
+
       p.preload = function() {
-        font = p.loadFont('assets/fonts/Raleway-Black.ttf')
+        font = p.loadFont("assets/fonts/Raleway-Black.ttf")
       }
 
       function ptDistance(p1, p2) {
@@ -52,9 +52,9 @@ ParticleFill = {
         textLayer.textFont(font)
         p.textFont(font)
 
-        engine = Engine.create();
-        world = engine.world;
-        world.gravity.y = 0;
+        engine = Engine.create()
+        world = engine.world
+        world.gravity.y = 0
 
         bounds = font.textBounds(txt, 0, 0, fontSize)
 
@@ -83,19 +83,18 @@ ParticleFill = {
           let firstX, lastX
 
           for (let x = textBounds.minX + pointRadius; x <= textBounds.maxX - pointRadius; x += 1) {
-
             if (!firstX && textLayer.get(x, y)[0] !== 0) {
               firstX = x
             } else if (firstX && textLayer.get(x, y)[0] === 0) {
               lastX = x
-              break;
+              break
             }
           }
 
-          let numPoints = (lastX - firstX / step)
+          let numPoints = lastX - firstX / step
 
           for (let i = 0; i < numPoints; i++) {
-            let x = firstX + pointRadius + i*step
+            let x = firstX + pointRadius + i * step
             let col = textLayer.get(x, y)[0]
             let lastColor = textLayer.get(x - step, y)[0]
             let nextcol = textLayer.get(x + step, y)[0]
@@ -123,12 +122,14 @@ ParticleFill = {
 
         let gridPtsCopy = JSON.parse(JSON.stringify(gridPts))
         while (gridPts.length > 0) {
-          let x = p.random(p.width) - initX/2
-          let y = p.random(p.height) - initY/2
+          let x = p.random(p.width) - initX / 2
+          let y = p.random(p.height) - initY / 2
           let dest = getDest(x, y)
-          freeParticles.push(new Point(p, x, y,
-                                       p.random(pointRadius, pointRadius*2), false, "PT", dest))
+          freeParticles.push(
+            new Point(p, x, y, p.random(pointRadius, pointRadius * 2), false, "PT", dest)
+          )
         }
+
         gridPts = gridPtsCopy
       }
 
@@ -144,12 +145,12 @@ ParticleFill = {
       }
 
       p.draw = function() {
-        canvasMouseX = (p.mouseX - p.width/2)/scale
-        canvasMouseY = (p.mouseY - p.height/2)/scale
+        canvasMouseX = (p.mouseX - p.width / 2) / scale
+        canvasMouseY = (p.mouseY - p.height / 2) / scale
 
-        p.clear();
+        p.clear()
         Engine.update(engine)
-        p.translate(p.width/2, p.height/2)
+        p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
 
         for (let pt of freeParticles) {
@@ -161,7 +162,6 @@ ParticleFill = {
       function doDrawShapeOnTextLayer(layer) {
         layer.beginShape()
         layer.translate(p.width / 2, p.height / 2)
-
 
         let prevPt = points[0]
         let inContour = false
@@ -194,15 +194,13 @@ ParticleFill = {
         return point
       }
 
-      p.windowResized = function () {
+      p.windowResized = function() {
         let div = document.getElementById(divId)
-        p.resizeCanvas(
-          div.offsetWidth,
-          div.clientHeight)
-  
+        p.resizeCanvas(div.offsetWidth, div.clientHeight)
+
         scale = Math.min(p.width, p.height) / initSize
       }
-  
+
       class Point {
         constructor(p, x, y, radius, isStatic = false, style = "LINE", dest) {
           this.p = p
@@ -216,13 +214,13 @@ ParticleFill = {
             angle: p.random(2 * Math.PI)
           }
 
-          this.body = Bodies.circle(x, y, radius / 2, options);
+          this.body = Bodies.circle(x, y, radius / 2, options)
           this.color = p.color(0, 255, 255, p.random(100, 180))
           this.radius = radius
           this.style = style
           this.sx = x
           this.sy = y
-          World.add(world, this.body);
+          World.add(world, this.body)
 
           this.dest = dest
         }
@@ -230,18 +228,18 @@ ParticleFill = {
         draw(layer) {
           this.p.fill(this.color)
           this.p.noStroke()
-          var pos = this.body.position;
+          var pos = this.body.position
           this.p.ellipse(pos.x, pos.y, this.radius)
         }
 
         update() {
-          let d = this.p.dist(this.dest.x, this.dest.y,
-                              canvasMouseX, canvasMouseY)
+          let d = this.p.dist(this.dest.x, this.dest.y, canvasMouseX, canvasMouseY)
           if (d <= initSize / 20) {
             let maxm = initSize / 5
             let v = this.p.createVector(
               this.body.position.x - canvasMouseX,
-              this.body.position.y - canvasMouseY)
+              this.body.position.y - canvasMouseY
+            )
             let m = this.p.map(v.mag(), 0, maxm, 1, 0)
             v.setMag(m)
             Body.setVelocity(this.body, {
@@ -259,7 +257,7 @@ ParticleFill = {
             Body.setVelocity(this.body, {
               x: dx / 25,
               y: dy / 25
-            });
+            })
           }
         }
       }
@@ -267,12 +265,11 @@ ParticleFill = {
       // Really silly hacky way to select a grid location for every particle
       // that's somewhat close to them.
       function getDest(sx, sy) {
-        let mx = p.map(sx, -initX/2, initX/2, textBounds.minX, textBounds.maxX)
-        let my = p.map(sy, -initY/2, initY/2, textBounds.minY, textBounds.maxY)
+        let mx = p.map(sx, -initX / 2, initX / 2, textBounds.minX, textBounds.maxX)
+        let my = p.map(sy, -initY / 2, initY / 2, textBounds.minY, textBounds.maxY)
 
         let possible = gridPts.filter(pt => {
-          return (pt.x >= mx - 50 && pt.x <= mx + 50) &&
-            (pt.y >= my - 50 && pt.y <= my + 50)
+          return pt.x >= mx - 50 && pt.x <= mx + 50 && (pt.y >= my - 50 && pt.y <= my + 50)
         })
 
         let idx
@@ -284,8 +281,8 @@ ParticleFill = {
 
         let pt = gridPts.splice(idx, 1)[0]
         return {
-          x: pt.x - initX/2,
-          y: pt.y - initY/2
+          x: pt.x - initX / 2,
+          y: pt.y - initY / 2
         }
       }
     }
