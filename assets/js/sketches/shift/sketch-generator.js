@@ -12,7 +12,7 @@ ParticleFill = {
 
       let drawShape = false
 
-      let txt = "spacetype"
+      let txt = "type"
       let fontSize = 0
       let font
       let points
@@ -31,10 +31,6 @@ ParticleFill = {
       let canvasMouseX
       let canvasMouseY
 
-      let initSize
-      let initX, initY
-      let textLayer
-
       p.preload = function() {
         font = p.loadFont("assets/fonts/Raleway-Black.ttf")
       }
@@ -42,6 +38,10 @@ ParticleFill = {
       function ptDistance(p1, p2) {
         return dist(p1.body.position.x, p1.body.position.y, p2.body.position.x, p2.body.position.y)
       }
+
+      let initSize
+      let initX, initY
+      let textLayer
 
       p.setup = function() {
         let div = document.getElementById(divId)
