@@ -13,8 +13,9 @@ Blobs = {
       let world
       let scale = 1
       let initSize
+      let bgDots
 
-      let txt = "SPACE"
+      let txt = "spacetype"
       let fontSize = 0
 
       let font
@@ -28,12 +29,14 @@ Blobs = {
       p.setup = function() {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
+        bgDots = p.createGraphics(p.width, p.height)
         p.textFont(font)
 
         engine = Engine.create()
         world = engine.world
         world.gravity.y = 0
 
+        resetBgDots()
         refreshPoints()
       }
 
@@ -47,6 +50,7 @@ Blobs = {
         p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
         Engine.update(engine)
+        p.image(bgDots, -p.width / 2, -p.height / 2)
         drawShape()
       }
 
@@ -56,6 +60,21 @@ Blobs = {
 
         scale = Math.min(p.width, p.height) / initSize
         lastWindowResize = p.millis()
+        resetBgDots()
+      }
+
+      function resetBgDots() {
+        let gs = 30
+
+        bgDots.clear()
+        bgDots.resizeCanvas(p.width, p.height)
+        for (let x = -gs; x <= p.width + gs; x += gs) {
+          for (let y = -gs; y <= p.height + gs; y += gs) {
+            bgDots.fill(0, 30)
+            bgDots.noStroke()
+            bgDots.ellipse(x, y, 10)
+          }
+        }
       }
 
       function refreshPoints() {
@@ -78,7 +97,7 @@ Blobs = {
 
           points = font
             .textToPoints(txt, 0, 0, fontSize, {
-              sampleFactor: 0.3
+              sampleFactor: 0.2
             })
             .map(centerAndNormalizePt)
             .map(pt => {
@@ -92,7 +111,7 @@ Blobs = {
         }
       }
 
-      function drawShape() {
+      function drawShape(color, offsets) {
         p.beginShape()
 
         let prevPt = points[0]
@@ -107,7 +126,7 @@ Blobs = {
             inContour = true
           }
 
-          pt.draw()
+          pt.draw(color, offsets)
           pt.update()
           prevPt = pt
         }

@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -6,52 +7,60 @@ html, body {
 }
 
 .full-vw {
-    width: 100%;
+  width: 100%;
 }
 
 .full-vh {
-    height: 100%;
+  height: 100%;
 }
 
 .full-w {
-    width: 100%;
+  width: 100%;
 }
 
 .full-h {
-    height: 100%;
+  height: 100%;
 }
 
 .position-rel {
-    position: relative;
+  position: relative;
 }
 
 canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    -webkit-animation-name: fadeIn;
-    animation-name: fadeIn;
-    -webkit-animation-duration: 4s;
-    animation-duration: 4s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+  -webkit-animation-duration: 4s;
+  animation-duration: 4s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
 }
 
 .fade-out {
-    -webkit-animation-name: fadeOut;
-    animation-name: fadeOut;
-    -webkit-animation-duration: 4s;
-    animation-duration: 4s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut;
+  -webkit-animation-duration: 4s;
+  animation-duration: 4s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
 }
 
 @keyframes fadeIn {
-    0% {opacity: 0;} 
-    100% {opacity: 1;}
- }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 @keyframes fadeOut {
-    0% {opacity: 1;}
-    100% {opacity: 0;} 
- }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

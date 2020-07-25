@@ -13,10 +13,19 @@ class Point {
     return new Point(this.p, x, y, this.body)
   }
 
-  draw() {
+  draw(color, offsets) {
+    let ox = offsets ? offsets.x : 0
+    let oy = offsets ? offsets.y : 0
+
+    if (!color) {
+      color = this.color
+    }
     this.p.noStroke()
-    this.p.fill(this.color)
-    this.p.vertex(this.body.position.x - this.p.width / 2, this.body.position.y - this.p.height / 2)
+    this.p.fill(color)
+    this.p.vertex(
+      this.body.position.x - this.p.width / 2 + ox,
+      this.body.position.y - this.p.height / 2 + oy
+    )
   }
 
   update() {
