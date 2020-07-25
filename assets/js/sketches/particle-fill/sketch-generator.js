@@ -31,11 +31,11 @@ ParticleFill = {
           },
           regular: {
             font: p.loadFont(`assets/fonts/SpaceTypeSans-Regular.otf`),
-            scale: initSize => (5 * initSize) / 6
+            scale: initSize => initSize
           },
           narrow: {
             font: p.loadFont(`assets/fonts/SpaceTypeSans-narrow.otf`),
-            scale: initSize => initSize
+            scale: initSize => 1.5 * initSize
           }
         }
       }
