@@ -1,5 +1,5 @@
 Blobs = {
-  targetBg: "#363636",
+  targetBg: "black",
   createSketch: function(divId) {
     let sketch = function(p) {
       let Engine = Matter.Engine
@@ -15,22 +15,35 @@ Blobs = {
       let initSize
       let bgDots
 
-      let txt = "spacetype"
+      let txt = "A"
       let fontSize = 0
 
+      let fonts = {}
       let font
       let points
       let bounds
 
       p.preload = function() {
-        font = p.loadFont("assets/fonts/Raleway-Black.ttf")
+        fonts = {
+          wide: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-wide.otf`),
+            scale: initSize => (2 * initSize) / 3
+          },
+          regular: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-Regular.otf`),
+            scale: initSize => (11 * initSize) / 12
+          },
+          narrow: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-narrow.otf`),
+            scale: initSize => initSize
+          }
+        }
       }
 
       p.setup = function() {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
         bgDots = p.createGraphics(p.width, p.height)
-        p.textFont(font)
 
         engine = Engine.create()
         world = engine.world
@@ -77,11 +90,25 @@ Blobs = {
         }
       }
 
+      function setFont() {
+        let aspect = p.width / p.height
+        if (aspect < 0.8) {
+          font = fonts["narrow"].font
+          fontSize = fonts["narrow"].scale(initSize)
+        } else if (aspect < 1.2) {
+          font = fonts.regular.font
+          fontSize = fonts.regular.scale(initSize)
+        } else {
+          font = fonts["wide"].font
+          fontSize = fonts["wide"].scale(initSize)
+        }
+      }
+
       function refreshPoints() {
         let oldFontSize = fontSize
 
         initSize = Math.min(p.width, p.height)
-        fontSize = initSize / 4
+        setFont()
         scale = 1
 
         if (oldFontSize !== fontSize) {
@@ -107,6 +134,7 @@ Blobs = {
               return new Point(p, pt.x, pt.y, body)
             })
 
+          console.log(points.length)
           setupPointConstraints()
         }
       }

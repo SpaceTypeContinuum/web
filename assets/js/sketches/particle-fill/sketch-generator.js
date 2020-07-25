@@ -2,17 +2,9 @@ ParticleFill = {
   targetBg: "black",
   createSketch: function(divId) {
     let sketch = function(p) {
-      let Engine = Matter.Engine
-      let World = Matter.World
-      let Body = Matter.Body
-      let Bodies = Matter.Bodies
-
-      let engine
-      let world
-
       let drawShape = false
 
-      let txt = "spacetype"
+      let txt = "A"
       let fontSize = 0
       let font
       let points
@@ -32,7 +24,20 @@ ParticleFill = {
       let canvasMouseY
 
       p.preload = function() {
-        font = p.loadFont("assets/fonts/Raleway-Black.ttf")
+        fonts = {
+          wide: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-wide.otf`),
+            scale: initSize => (2 * initSize) / 3
+          },
+          regular: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-Regular.otf`),
+            scale: initSize => (5 * initSize) / 6
+          },
+          narrow: {
+            font: p.loadFont(`assets/fonts/SpaceTypeSans-narrow.otf`),
+            scale: initSize => initSize
+          }
+        }
       }
 
       function ptDistance(p1, p2) {
@@ -43,6 +48,20 @@ ParticleFill = {
       let initX, initY
       let textLayer
 
+      function setFont() {
+        let aspect = p.width / p.height
+        if (aspect < 0.8) {
+          font = fonts["narrow"].font
+          fontSize = fonts["narrow"].scale(initSize)
+        } else if (aspect < 1.2) {
+          font = fonts.regular.font
+          fontSize = fonts.regular.scale(initSize)
+        } else {
+          font = fonts["wide"].font
+          fontSize = fonts["wide"].scale(initSize)
+        }
+      }
+
       p.setup = function() {
         let div = document.getElementById(divId)
         let canvas = p.createCanvas(div.offsetWidth, div.clientHeight)
@@ -51,13 +70,11 @@ ParticleFill = {
         initSize = p.min(p.width, p.height)
         initX = p.width
         initY = p.height
-        fontSize = initSize / 4
-        textLayer.textFont(font)
-        p.textFont(font)
 
-        engine = Engine.create()
-        world = engine.world
-        world.gravity.y = 0
+        setFont()
+        textLayer.textFont(font)
+        textLayer.textSize(fontSize)
+        p.textFont(font)
 
         bounds = font.textBounds(txt, 0, 0, fontSize)
 
@@ -129,7 +146,7 @@ ParticleFill = {
           let y = p.random(p.height) - initY / 2
           let dest = getDest(x, y)
           freeParticles.push(
-            new Point(p, x, y, p.random(pointRadius, pointRadius * 2), false, "PT", dest)
+            new Point(p, x, y, p.random(pointRadius, pointRadius * 2), false, dest)
           )
         }
 
@@ -160,7 +177,6 @@ ParticleFill = {
         canvasMouseY = (p.mouseY - p.height / 2) / scale
 
         p.clear()
-        Engine.update(engine)
         p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
 
@@ -263,26 +279,22 @@ ParticleFill = {
       }
 
       class Point {
-        constructor(p, x, y, radius, isStatic = false, style = "LINE", dest) {
+        constructor(p, x, y, radius, isStatic = false, dest) {
           this.p = p
-          let density = 0.0001
 
-          var options = {
-            friction: 1.0,
-            restitution: 0.95,
-            isStatic,
-            density,
-            angle: p.random(2 * Math.PI)
+          this.body = {
+            position: {
+              x: x,
+              y: y
+            }
           }
 
-          this.body = Bodies.circle(x, y, radius / 2, options)
+          this.vx = 0
+          this.vy = 0
           this.color = p.color(0, 255, 255, p.random(100, 180))
           this.radius = radius
-          this.style = style
           this.sx = x
           this.sy = y
-          World.add(world, this.body)
-
           this.dest = dest
         }
 
@@ -303,42 +315,27 @@ ParticleFill = {
             )
             let m = this.p.map(v.mag(), 0, maxm, 1, 0)
             v.setMag(m)
-            Body.setVelocity(this.body, {
-              x: v.x,
-              y: v.y
-            })
+            this.vx = v.x
+            this.vy = v.y
           } else if (d < initSize / 26) {
-            Body.setVelocity(this.body, {
-              x: this.body.velocity.x * 0.3,
-              y: this.body.velocity.y * 0.3
-            })
+            this.vx = this.body.velocity.x * 0.3
+            this.vy = this.body.velocity.y * 0.3
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
-            Body.setVelocity(this.body, {
-              x: dx / 25,
-              y: dy / 25
-            })
+            this.vx = dx / 25
+            this.vy = dy / 25
           }
+
+          this.body.position.x += this.vx
+          this.body.position.y += this.vy
         }
       }
 
       // Really silly hacky way to select a grid location for every particle
       // that's somewhat close to them.
       function getDest(sx, sy) {
-        let mx = p.map(sx, -initX / 2, initX / 2, textBounds.minX, textBounds.maxX)
-        let my = p.map(sy, -initY / 2, initY / 2, textBounds.minY, textBounds.maxY)
-
-        let possible = gridPts.filter(pt => {
-          return pt.x >= mx - 50 && pt.x <= mx + 50 && (pt.y >= my - 50 && pt.y <= my + 50)
-        })
-
-        let idx
-        if (possible.length === 0) {
-          idx = p.int(p.random(gridPts.length - 1))
-        } else {
-          idx = gridPts.indexOf(p.random(possible))
-        }
+        let idx = p.int(p.random(gridPts.length - 1))
 
         let pt = gridPts.splice(idx, 1)[0]
         return {
