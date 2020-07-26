@@ -11,7 +11,7 @@ ParticleFill = {
       let scale = 1
       let pointRadius = 2
 
-      let numBgParticles = 400
+      let numBgParticles = 200
       let bgParticles = []
       let freeParticles = []
 
@@ -308,23 +308,23 @@ ParticleFill = {
         update() {
           let d = this.p.dist(this.dest.x, this.dest.y, canvasMouseX, canvasMouseY)
           if (d <= initSize / 10) {
-            let maxm = initSize
+            let maxm = initSize / 5
             let v = this.p.createVector(
               this.body.position.x - canvasMouseX,
               this.body.position.y - canvasMouseY
             )
-            let m = this.p.map(v.mag(), 0, maxm, 1, 0)
+            let m = this.p.map(v.mag(), 0, maxm, 5, 0)
             v.setMag(m)
             this.vx = v.x
             this.vy = v.y
           } else if (d < initSize / 26) {
-            this.vx = this.body.velocity.x * 0.3
-            this.vy = this.body.velocity.y * 0.3
+            this.vx = this.body.velocity.x * 0.6
+            this.vy = this.body.velocity.y * 0.6
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
-            this.vx = dx / 15
-            this.vy = dy / 15
+            this.vx = dx / 10
+            this.vy = dy / 10
           }
 
           this.body.position.x += this.vx
@@ -332,9 +332,7 @@ ParticleFill = {
         }
       }
 
-      // Really silly hacky way to select a grid location for every particle
-      // that's somewhat close to them.
-      function getDest(sx, sy) {
+      function getDest() {
         let idx = p.int(p.random(gridPts.length - 1))
 
         let pt = gridPts.splice(idx, 1)[0]
