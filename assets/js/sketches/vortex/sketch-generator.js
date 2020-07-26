@@ -38,6 +38,8 @@ Vortex = {
         p.scale(-1, 1)
         p.scale(scale)
 
+        let spinOffset = p.width < 720 ? -200 : 0
+
         for (let y = 0; y < p.height; y += rowSize) {
           let fakey = p.map(y, 0, p.height, 0, 1348)
 
@@ -49,7 +51,7 @@ Vortex = {
           let dx = -magicWidth / 2
           let dy = -magicHeight / 2 + fakey
 
-          let rot = p.radians(0.001 * p.frameCount + fakey * 0.0012) / scale
+          let rot = p.radians(0.001 * (spinOffset + p.frameCount) + fakey * 0.0012) / scale
           rot *= rowSize / 5
           p.rotate(rot)
           p.image(

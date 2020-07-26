@@ -1,4 +1,4 @@
-Blobs = {
+BlobFills = {
   targetBg: "black",
   createSketch: function(divId) {
     let sketch = function(p) {
@@ -13,7 +13,6 @@ Blobs = {
       let world
       let scale = 1
       let initSize
-      let bgDots
 
       let txt = "SPACETYPE"
       let fontSize = 0
@@ -22,6 +21,8 @@ Blobs = {
       let font
       let points
       let bounds
+
+      let freeParticles = []
 
       p.preload = function() {
         fonts = {
@@ -43,14 +44,38 @@ Blobs = {
       p.setup = function() {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
-        bgDots = p.createGraphics(p.width, p.height)
 
         engine = Engine.create()
         world = engine.world
         world.gravity.y = 0
 
-        resetBgDots()
         refreshPoints()
+      }
+
+      function drawShape() {
+        p.noStroke()
+        p.beginShape()
+
+        let prevPt = points[0]
+        let inContour = false
+        for (let pt of points) {
+          let dist = prevPt.distanceTo(pt)
+          if (dist > 20) {
+            if (inContour) {
+              p.endContour()
+            }
+            p.beginContour()
+            inContour = true
+          }
+
+          p.vertex(pt.body.position.x - p.width / 2, pt.body.position.y - p.height / 2)
+          prevPt = pt
+        }
+
+        if (inContour) {
+          p.endContour()
+        }
+        p.endShape()
       }
 
       p.draw = function() {
@@ -59,12 +84,63 @@ Blobs = {
           lastWindowResize = null
         }
 
+        if (p.mouseIsPressed) {
+          let radius = p.random(2, 10)
+          var options = {
+            friction: 0.0,
+            restitution: 0.95,
+            angle: p.random(2 * Math.PI)
+          }
+
+          let body = Bodies.circle(
+            (p.mouseX - p.width / 2) / scale + p.width / 2,
+            (p.mouseY - p.height / 2) / scale + p.height / 2,
+            radius * 2,
+            options
+          )
+          World.add(world, body)
+          freeParticles.push(
+            new BlobFillPoint(p, body, p.color(0, 255, 255, p.random(100, 180)), radius * 2)
+          )
+        }
+
+        // if (p.frameCount % 3 < 2) {
+        //   for (let i of [2.5, 3, 3.7, 4.5, 5.2, 5.8, 6.2, 6.7, 7.5]) {
+        //     let pos = { x: (i * p.width) / 10, y: (3 * p.height) / 4 }
+
+        //     let radius = p.random(2, 10)
+        //     var options = {
+        //       friction: 0.0,
+        //       restitution: 0.95,
+        //       angle: p.random(2 * Math.PI)
+        //     }
+
+        //     let body = Bodies.circle(
+        //       (pos.x - p.width / 2) / scale + p.width / 2,
+        //       (pos.y - p.height / 2) / scale + p.height / 2,
+        //       radius * 2,
+        //       options
+        //     )
+        //     World.add(world, body)
+        //     freeParticles.push(
+        //       new BlobFillPoint(p, body, p.color(0, 255, 255, p.random(100, 180)), radius * 2)
+        //     )
+        //   }
+        // }
+
         p.clear()
         p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
         Engine.update(engine)
-        p.image(bgDots, -p.width / 2, -p.height / 2)
+        p.fill("white")
         drawShape()
+        for (let pt of freeParticles) {
+          pt.draw()
+        }
+
+        for (let pt of points) {
+          pt.update()
+        }
       }
 
       p.windowResized = function() {
@@ -73,21 +149,6 @@ Blobs = {
 
         scale = Math.min(p.width, p.height) / initSize
         lastWindowResize = p.millis()
-        resetBgDots()
-      }
-
-      function resetBgDots() {
-        let gs = 30
-
-        bgDots.clear()
-        bgDots.resizeCanvas(p.width, p.height)
-        for (let x = -gs; x <= p.width + gs; x += gs) {
-          for (let y = -gs; y <= p.height + gs; y += gs) {
-            bgDots.fill(0, 30)
-            bgDots.noStroke()
-            bgDots.ellipse(x, y, 10)
-          }
-        }
       }
 
       function setFont() {
@@ -106,6 +167,7 @@ Blobs = {
 
       function refreshPoints() {
         let oldFontSize = fontSize
+        freeParticles = []
 
         initSize = Math.min(p.width, p.height)
         setFont()
@@ -122,57 +184,29 @@ Blobs = {
           World.clear(world)
           Engine.clear(engine)
 
+          let prevPt
           points = font
             .textToPoints(txt, 0, 0, fontSize, {
-              sampleFactor: 0.2
+              sampleFactor: 0.1
             })
             .map(centerAndNormalizePt)
             .map(pt => {
+              prevPt = pt
               let body = Bodies.circle(pt.x + p.width / 2, pt.y + p.height / 2, 1, ptBodyOptions)
               World.add(world, body)
-
-              return new Point(p, pt.x, pt.y, body)
+              return new PointBoundary(p, pt.x, pt.y, body)
             })
 
-          console.log(points.length)
           setupPointConstraints()
         }
       }
 
-      function drawShape(color, offsets) {
-        p.beginShape()
-
-        let prevPt = points[0]
-        let inContour = false
-        for (let pt of points) {
-          let dist = prevPt.distanceTo(pt)
-          if (dist > 20) {
-            if (inContour) {
-              p.endContour()
-            }
-            p.beginContour()
-            inContour = true
-          }
-
-          pt.draw(color, offsets)
-          pt.update()
-          prevPt = pt
-        }
-
-        if (inContour) {
-          p.endContour()
-        }
-        p.endShape()
-      }
-
       function centerAndNormalizePt(pt) {
-        let point = {
+        return {
           ...pt,
           x: pt.x - bounds.x - bounds.w / 2,
           y: pt.y - bounds.y - bounds.h / 2
         }
-
-        return point
       }
 
       function setupPointConstraints() {

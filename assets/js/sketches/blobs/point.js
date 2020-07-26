@@ -1,5 +1,3 @@
-let Body = Matter.Body
-
 class Point {
   constructor(p, x, y, body) {
     this.p = p
@@ -62,7 +60,7 @@ class Point {
     let dx = this.sx + this.p.width / 2 - this.body.position.x
     let dy = this.sy + this.p.height / 2 - this.body.position.y
 
-    Body.setVelocity(this.body, {
+    Matter.Body.setVelocity(this.body, {
       x: dx / 5,
       y: dy / 5
     })
