@@ -1,7 +1,7 @@
 class Point {
   constructor(p, x, y, body) {
     this.p = p
-    this.color = "white"
+    this.color = "#fce435"
     this.sx = x
     this.sy = y
     this.body = body
@@ -47,9 +47,9 @@ class Point {
       this.body.position.y - this.p.mouseY
     )
 
-    v.setMag(1)
+    v.setMag(3)
 
-    Body.setVelocity(this.body, {
+    Matter.Body.setVelocity(this.body, {
       x: v.x,
       y: v.y
     })

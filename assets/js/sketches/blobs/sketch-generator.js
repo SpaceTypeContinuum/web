@@ -1,5 +1,5 @@
 Blobs = {
-  targetBg: "black",
+  targetBg: "#161616",
   createSketch: function(divId) {
     let sketch = function(p) {
       let Engine = Matter.Engine

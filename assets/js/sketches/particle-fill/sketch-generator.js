@@ -1,5 +1,5 @@
 ParticleFill = {
-  targetBg: "black",
+  targetBg: "#161616",
   createSketch: function(divId) {
     let sketch = function(p) {
       let drawShape = false
@@ -323,8 +323,8 @@ ParticleFill = {
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
-            this.vx = dx / 10
-            this.vy = dy / 10
+            this.vx = dx / 30
+            this.vy = dy / 30
           }
 
           this.body.position.x += this.vx

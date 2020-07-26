@@ -1,5 +1,5 @@
 Vortex = {
-  targetBg: "#000000",
+  targetBg: "#161616",
   createSketch: function(divId) {
     let sketch = function(p) {
       let txt = "SPACE  TYPE"

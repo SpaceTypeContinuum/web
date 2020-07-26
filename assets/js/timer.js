@@ -1,4 +1,4 @@
-let sketches = [Blobs, BlobFills, Vortex, ParticleFill]
+let sketches = [Blobs, Vortex, ParticleFill]
 
 let lastSketchType = -1
 let nextSketchType = 0
