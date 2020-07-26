@@ -176,11 +176,15 @@ Blobs = {
               y: vy
             })
 
-            this.p.vertex(
+            this.p.curveVertex(
               pt.body.position.x - this.p.width / 2,
               pt.body.position.y - this.p.height / 2
             )
           }
+          this.p.curveVertex(
+            this.pts[0].body.position.x - this.p.width / 2,
+            this.pts[0].body.position.y - this.p.height / 2
+          )
           this.p.endShape()
         }
       }
