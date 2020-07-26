@@ -334,8 +334,8 @@ ParticleFill = {
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
-            this.vx = dx / 30
-            this.vy = dy / 30
+            this.vx = 2 * dx / this.p.frameRate()
+            this.vy = 2 * dy / this.p.frameRate()
           }
 
           this.body.position.x += this.vx
