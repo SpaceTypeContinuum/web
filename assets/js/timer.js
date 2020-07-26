@@ -1,7 +1,7 @@
 let sketches = [Blobs, Vortex, ParticleFill]
 
 let lastSketchType = -1
-let nextSketchType = 0
+let nextSketchType = Math.floor(Math.random() * sketches.length)
 let currentp5
 let nextp5
 
@@ -9,7 +9,10 @@ function createSketch() {
   let currentSketch = sketches[nextSketchType].createSketch("canvas")
   nextp5 = new p5(currentSketch, "canvas")
   lastSketchType = nextSketchType
-  nextSketchType = (nextSketchType + 1) % sketches.length
+
+  while (nextSketchType === lastSketchType) {
+    nextSketchType = Math.floor(Math.random() * sketches.length)
+  }
 }
 
 function startCycle() {
