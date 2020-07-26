@@ -4,14 +4,14 @@ ParticleFill = {
     let sketch = function(p) {
       let drawShape = false
 
-      let txt = "A"
+      let txt = "SPACETYPE"
       let fontSize = 0
       let font
       let points
       let scale = 1
       let pointRadius = 2
 
-      let numBgParticles = 200
+      let numBgParticles = 400
       let bgParticles = []
       let freeParticles = []
 
@@ -307,8 +307,8 @@ ParticleFill = {
 
         update() {
           let d = this.p.dist(this.dest.x, this.dest.y, canvasMouseX, canvasMouseY)
-          if (d <= initSize / 20) {
-            let maxm = initSize / 5
+          if (d <= initSize / 10) {
+            let maxm = initSize
             let v = this.p.createVector(
               this.body.position.x - canvasMouseX,
               this.body.position.y - canvasMouseY
@@ -323,8 +323,8 @@ ParticleFill = {
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
-            this.vx = dx / 25
-            this.vy = dy / 25
+            this.vx = dx / 15
+            this.vy = dy / 15
           }
 
           this.body.position.x += this.vx

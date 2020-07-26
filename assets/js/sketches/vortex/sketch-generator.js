@@ -2,7 +2,7 @@ Vortex = {
   targetBg: "#000000",
   createSketch: function(divId) {
     let sketch = function(p) {
-      let txt = "space"
+      let txt = "SPACE  TYPE"
       let font
 
       let txtCanvas
@@ -11,11 +11,11 @@ Vortex = {
       let scale
       let magicWidth = 2392
       let magicHeight = 1333
-      let initSize = 1333
+      let initSize = 1600
       let magicFontSize = 355
 
       p.preload = function() {
-        font = p.loadFont("assets/fonts/Raleway-Black.ttf")
+        font = p.loadFont("assets/fonts/SpaceTypeSans-wide.otf")
       }
 
       p.setup = function() {
@@ -31,23 +31,34 @@ Vortex = {
       p.draw = function() {
         p.clear()
         p.translate(p.width / 2, p.height / 2)
-        p.rotate((-Math.PI / 8) * (scale / 2))
+        p.translate(p.width / 6, 0)
+        p.rotate(-Math.PI / 2)
         p.scale(-1, 1)
         p.scale(scale)
 
         for (let y = 0; y < p.height; y += rowSize) {
           let fakey = p.map(y, 0, p.height, 0, 1348)
-          let wave = 10 * Math.sin(0.15 * fakey * 0.001 * p.frameCount)
+          let wave = 880 + 10 * Math.sin(0.15 * fakey * 0.001 * p.frameCount)
 
           let sx = 0 + Math.floor(wave)
           let sy = fakey
           let dx = -magicWidth / 2
           let dy = -magicHeight / 2 + fakey
 
-          let rot = p.radians(fakey * 0.003) / scale
+          let rot = p.radians(fakey * 0.0012) / scale
           rot *= rowSize / 5
           p.rotate(rot)
-          p.image(txtCanvas, dx, dy, magicWidth, rowSize, sx, sy, txtCanvas.width, rowSize * 6)
+          p.image(
+            txtCanvas,
+            dx,
+            dy,
+            magicWidth * 2.5,
+            rowSize,
+            sx,
+            sy,
+            txtCanvas.width,
+            rowSize * 6
+          )
         }
       }
 

@@ -15,7 +15,7 @@ Blobs = {
       let initSize
       let bgDots
 
-      let txt = "A"
+      let txt = "SPACETYPE"
       let fontSize = 0
 
       let fonts = {}
