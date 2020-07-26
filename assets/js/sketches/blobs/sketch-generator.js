@@ -13,7 +13,6 @@ Blobs = {
       let world
       let scale = 1
       let initSize
-      let bgDots
 
       let txt = "SPACETYPE"
       let fontSize = 0
@@ -22,6 +21,9 @@ Blobs = {
       let font
       let points
       let bounds
+      let charBoundaries
+
+      let blobs = []
 
       p.preload = function() {
         fonts = {
@@ -43,14 +45,144 @@ Blobs = {
       p.setup = function() {
         let div = document.getElementById(divId)
         p.createCanvas(div.offsetWidth, div.clientHeight)
-        bgDots = p.createGraphics(p.width, p.height)
 
         engine = Engine.create()
         world = engine.world
         world.gravity.y = 0
 
-        resetBgDots()
         refreshPoints()
+        addBlobs()
+      }
+
+      function addBlobs() {
+        for (let i = 0; i < 100; i++) {
+          blobs.push(new Blob(p, p.random(p.width), p.random(p.height), p.random(3, initSize / 50)))
+        }
+      }
+
+      class Blob {
+        constructor(p, x, y, radius) {
+          this.p = p
+          this.pts = []
+
+          let rand = p.random(1)
+          if (rand < 0.1) {
+            this.color = p.color("#fe2179")
+          } else if (rand < 0.2) {
+            this.color = p.color("white")
+          } else if (rand < 0.3) {
+            this.color = p.color("#fce345")
+          } else {
+            this.color = p.color("#4ecdc4")
+          }
+
+          let npoints = 20
+          let angle = (2 * Math.PI) / npoints
+          for (let a = 0; a < 2 * Math.PI; a += angle) {
+            let sx = x + Math.cos(a) * radius
+            let sy = y + Math.sin(a) * radius
+            let pt = {
+              sx,
+              sy,
+              body: Bodies.circle(sx, sy, 1, {
+                collisionFilter: {
+                  category: p.random(10000)
+                },
+                friction: 0.0,
+                restitution: 0.95,
+                density: 1
+              })
+            }
+
+            Matter.Body.setVelocity(pt.body, {
+              x: p.random(-1, 1),
+              y: p.random(-1, 1)
+            })
+
+            World.add(world, pt.body)
+            this.pts.push(pt)
+          }
+
+          for (let i = 0; i < this.pts.length - 2; i++) {
+            let nextPt = this.pts[i + 1]
+            let d = p.dist(
+              this.pts[i].body.position.x,
+              this.pts[i].body.position.y,
+              nextPt.body.position.x,
+              nextPt.body.position.y
+            )
+            addConstraint(this.pts[i].body, nextPt.body, d)
+          }
+
+          let d = p.dist(
+            this.pts[this.pts.length - 1].body.position.x,
+            this.pts[this.pts.length - 1].body.position.y,
+            this.pts[0].body.position.x,
+            this.pts[0].body.position.y
+          )
+          // Close off the last shape
+          addConstraint(this.pts[this.pts.length - 1].body, this.pts[0].body, d)
+        }
+
+        draw() {
+          this.p.noStroke()
+
+          let dist = this.p
+            .createVector(
+              this.pts[0].body.position.x - this.p.width / 2,
+              this.pts[0].body.position.y - this.p.height / 2
+            )
+            .mag()
+
+          let transp = this.p.map(
+            dist,
+            0,
+            this.p.createVector(this.p.width / 2, this.p.height / 2).mag(),
+            50,
+            255,
+            true
+          )
+
+          this.color.setAlpha(transp)
+          this.p.fill(this.color)
+
+          this.p.beginShape()
+          for (let pt of this.pts) {
+            let dx = pt.sx - pt.body.position.x
+            let dy = pt.sy - pt.body.position.y
+
+            let vx = pt.body.velocity.x + dx / 50
+            let vy = pt.body.velocity.y + dy / 50
+
+            let canvasMouseX = this.p.mouseX / scale
+            let canvasMouseY = this.p.mouseY / scale
+            let d = this.p.dist(pt.body.position.x, pt.body.position.y, canvasMouseX, canvasMouseY)
+            if (d <= initSize / 5) {
+              let maxm = initSize
+              let v = this.p.createVector(
+                pt.body.position.x - canvasMouseX,
+                pt.body.position.y - canvasMouseY
+              )
+              let m = this.p.map(v.mag(), 0, maxm, 1, 0)
+              v.setMag(m)
+              vx = v.x
+              vy = v.y
+              this.sx += v.x
+              this.sy += v.y
+            }
+
+            Matter.Body.setVelocity(pt.body, {
+              x: vx,
+              y: vy
+            })
+
+            this.p.vertex(
+              pt.body.position.x - this.p.width / 2,
+              pt.body.position.y - this.p.height / 2
+            )
+          }
+          this.p.endShape()
+        }
       }
 
       p.draw = function() {
@@ -63,7 +195,9 @@ Blobs = {
         p.translate(p.width / 2, p.height / 2)
         p.scale(scale)
         Engine.update(engine)
-        p.image(bgDots, -p.width / 2, -p.height / 2)
+        for (let blob of blobs) {
+          blob.draw()
+        }
         drawShape()
       }
 
@@ -73,21 +207,6 @@ Blobs = {
 
         scale = Math.min(p.width, p.height) / initSize
         lastWindowResize = p.millis()
-        resetBgDots()
-      }
-
-      function resetBgDots() {
-        let gs = 30
-
-        bgDots.clear()
-        bgDots.resizeCanvas(p.width, p.height)
-        for (let x = -gs; x <= p.width + gs; x += gs) {
-          for (let y = -gs; y <= p.height + gs; y += gs) {
-            bgDots.fill(0, 30)
-            bgDots.noStroke()
-            bgDots.ellipse(x, y, 10)
-          }
-        }
       }
 
       function setFont() {
@@ -136,25 +255,50 @@ Blobs = {
 
           console.log(points.length)
           setupPointConstraints()
+          charBoundaries = getCharacterBoundaries({
+            text: txt,
+            font,
+            fontSize,
+            options: {
+              sampleFactor: 0.2
+            }
+          })
         }
       }
 
-      function drawShape(color, offsets) {
+      function drawShape() {
         p.beginShape()
 
+        let char = 0
         let prevPt = points[0]
         let inContour = false
-        for (let pt of points) {
-          let dist = prevPt.distanceTo(pt)
-          if (dist > 20) {
+
+        let color = p.color("#37f79b")
+        for (let i = 0; i < points.length; i++) {
+          let pt = points[i]
+          if (charBoundaries.includes(i)) {
             if (inContour) {
               p.endContour()
             }
-            p.beginContour()
-            inContour = true
+            p.endShape()
+            inContour = false
+            char += 1
+            if (char >= 5) {
+              color = p.color("white")
+            }
+            p.beginShape(p.CLOSE)
+          } else {
+            let dist = prevPt.distanceTo(pt)
+            if (dist > 20) {
+              if (inContour) {
+                p.endContour()
+              }
+              p.beginContour()
+              inContour = true
+            }
           }
 
-          pt.draw(color, offsets)
+          pt.draw(color)
           pt.update()
           prevPt = pt
         }

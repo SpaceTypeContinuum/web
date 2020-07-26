@@ -44,7 +44,7 @@ Vortex = {
           let fakey = p.map(y, 0, p.height, 0, 1348)
 
           let maxWave = p.map(p.mouseX, 0, p.width, -150, 60)
-          let wave = 880 + maxWave + 10 * Math.sin(0.15 * fakey * 0.001 * p.frameCount)
+          let wave = 880 + maxWave + 10 * Math.sin(0.15 * fakey * 0.00001 * p.millis())
 
           let sx = 0 + Math.floor(wave)
           let sy = fakey

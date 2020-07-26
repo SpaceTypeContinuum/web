@@ -291,7 +291,18 @@ ParticleFill = {
 
           this.vx = 0
           this.vy = 0
-          this.color = p.color(0, 255, 255, p.random(100, 180))
+
+          let rand = p.random(1)
+          if (rand < 0.1) {
+            this.color = p.color("#fe2179")
+          } else if (rand < 0.2) {
+            this.color = p.color("white")
+          } else if (rand < 0.3) {
+            this.color = p.color("#fce345")
+          } else {
+            this.color = p.color("#37f79b")
+          }
+          this.color.setAlpha(255)
           this.radius = radius
           this.sx = x
           this.sy = y

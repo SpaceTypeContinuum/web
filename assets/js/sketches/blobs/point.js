@@ -1,7 +1,7 @@
 class Point {
   constructor(p, x, y, body) {
     this.p = p
-    this.color = "#fce435"
+    this.color = "#37f79b"
     this.sx = x
     this.sy = y
     this.body = body

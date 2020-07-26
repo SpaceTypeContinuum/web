@@ -1,7 +1,7 @@
 let sketches = [Blobs, Vortex, ParticleFill]
 
 let lastSketchType = -1
-let nextSketchType = Math.floor(Math.random() * sketches.length)
+let nextSketchType = Math.floor(Math.random() * 2)
 let currentp5
 let nextp5
 
