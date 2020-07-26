@@ -50,10 +50,7 @@ ParticleFill = {
 
       function setFont() {
         let aspect = p.width / p.height
-        if (aspect < 0.8) {
-          font = fonts["narrow"].font
-          fontSize = fonts["narrow"].scale(initSize)
-        } else if (aspect < 1.2) {
+        if (aspect < 1.2) {
           font = fonts.regular.font
           fontSize = fonts.regular.scale(initSize)
         } else {
