@@ -4,8 +4,8 @@ PathTweaker = {
     let sketch = function(p) {
       let txt = "SPACETYPE"
       let p5font
+      let fonts
       let font
-      let fontData
       let path
 
       let historyLayer
@@ -16,17 +16,18 @@ PathTweaker = {
       let initSize
       let fontSize
       let bounds
+      let lastWindowResize
 
       function setFont() {
         let aspect = p.width / p.height
         if (aspect < 0.8) {
-          p5font = fonts["narrow"].font
+          font = fonts["narrow"]
           fontSize = fonts["narrow"].scale(initSize)
         } else if (aspect < 1.2) {
-          font = fonts.regular.font
+          font = fonts.regular
           fontSize = fonts.regular.scale(initSize)
         } else {
-          font = fonts["wide"].font
+          font = fonts["wide"]
           fontSize = fonts["wide"].scale(initSize)
         }
       }
@@ -94,8 +95,23 @@ PathTweaker = {
       }
 
       p.preload = function() {
-        fontData = p.loadBytes("assets/fonts/SpaceTypeSans-wide.otf")
-        p5font = p.loadFont("assets/fonts/SpaceTypeSans-wide.otf")
+        fonts = {
+          wide: {
+            p5font: p.loadFont(`assets/fonts/SpaceTypeSans-wide.otf`),
+            fontData: p.loadBytes("assets/fonts/SpaceTypeSans-wide.otf"),
+            scale: initSize => (2 * initSize) / 3
+          },
+          regular: {
+            p5font: p.loadFont(`assets/fonts/SpaceTypeSans-Regular.otf`),
+            fontData: p.loadBytes("assets/fonts/SpaceTypeSans-Regular.otf"),
+            scale: initSize => initSize
+          },
+          narrow: {
+            p5font: p.loadFont(`assets/fonts/SpaceTypeSans-narrow.otf`),
+            fontData: p.loadBytes("assets/fonts/SpaceTypeSans-narrow.otf"),
+            scale: initSize => 1.5 * initSize
+          }
+        }
       }
 
       p.setup = function() {
@@ -105,11 +121,6 @@ PathTweaker = {
         historyLayer = p.createGraphics(p.width, p.height)
         uiLayer = p.createGraphics(p.width, p.height)
         refreshCanvas()
-
-        for (let seg of path.commands) {
-          seg.offset = p.random(2 * Math.PI)
-          seg.speed = p.random(0.005, 0.05)
-        }
       }
 
       function closestSegment() {
@@ -186,6 +197,11 @@ PathTweaker = {
       }
 
       p.draw = function() {
+        if (lastWindowResize && p.millis() - lastWindowResize > 200) {
+          refreshCanvas()
+          lastWindowResize = null
+        }
+
         let mouseOverSegment = closestSegment()
         moveHandle(mouseOverSegment)
 
@@ -233,15 +249,20 @@ PathTweaker = {
         historyLayer.resizeCanvas(p.width, p.height)
         uiLayer.resizeCanvas(p.width, p.height)
         scale = Math.min(p.width, p.height) / initSize
+        lastWindowResize = p.millis()
       }
 
       function refreshCanvas() {
         initSize = Math.min(p.width, p.height)
         console.log(initSize)
-        fontSize = (2 * initSize) / 3
-        let bounds = p5font.textBounds(txt, 0, 0, fontSize)
-        font = opentype.parse(fontData.bytes.buffer)
-        path = font.getPath(txt, -bounds.w / 2, bounds.h / 2, fontSize)
+        setFont()
+        let bounds = font.p5font.textBounds(txt, 0, 0, fontSize)
+        parsedFont = opentype.parse(font.fontData.bytes.buffer)
+        path = parsedFont.getPath(txt, -bounds.w / 2, bounds.h / 2, fontSize)
+        for (let seg of path.commands) {
+          seg.offset = p.random(2 * Math.PI)
+          seg.speed = p.random(0.005, 0.05)
+        }
       }
     }
     return sketch
