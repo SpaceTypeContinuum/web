@@ -29,7 +29,7 @@ function startCycle() {
   el.style.background = sketches[lastSketchType].targetBg
   document.getElementById("container").style.background = sketches[nextSketchType].targetBg
   el.classList.add("fade-out")
-  setTimeout(startSketch, 3000)
+  setTimeout(startSketch, 1000)
 }
 
 function startSketch() {
@@ -37,7 +37,7 @@ function startSketch() {
   setTimeout(completeCycle, 1000)
 }
 
-function completeCycle(timer = 15000) {
+function completeCycle(timer = 10000) {
   if (currentp5) {
     currentp5.remove()
   }
