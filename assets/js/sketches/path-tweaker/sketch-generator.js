@@ -17,6 +17,20 @@ PathTweaker = {
       let fontSize
       let bounds
 
+      function setFont() {
+        let aspect = p.width / p.height
+        if (aspect < 0.8) {
+          p5font = fonts["narrow"].font
+          fontSize = fonts["narrow"].scale(initSize)
+        } else if (aspect < 1.2) {
+          font = fonts.regular.font
+          fontSize = fonts.regular.scale(initSize)
+        } else {
+          font = fonts["wide"].font
+          fontSize = fonts["wide"].scale(initSize)
+        }
+      }
+
       // Thanks to Allison Parrish for this outline function that
       // we have mangled for our own nefarious purposes  = )
       function drawPathOutline(cmds, layer, curvesOnly = false) {
@@ -183,7 +197,7 @@ PathTweaker = {
         drawLayer.clear()
         drawLayer.noFill()
         drawLayer.stroke(255)
-        drawLayer.strokeWeight(1)
+        drawLayer.strokeWeight(2)
         drawLayer.push()
         drawLayer.translate(p.width / 2, p.height / 2)
         drawLayer.scale(scale)
