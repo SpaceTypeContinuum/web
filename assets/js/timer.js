@@ -40,7 +40,7 @@ function completeCycle() {
   }
 
   currentp5 = nextp5
-  setTimeout(startCycle, 10000)
+  setTimeout(startCycle, 15000)
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
