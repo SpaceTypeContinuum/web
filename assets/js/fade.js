@@ -15,7 +15,7 @@ function fadeOutEffect(link) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  let elem = document.querySelector("a.fade-in")
+  let elem = document.querySelector(".link")
   elem.addEventListener(
     "click",
     function(e) {
