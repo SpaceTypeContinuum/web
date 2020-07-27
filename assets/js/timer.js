@@ -29,12 +29,12 @@ function startCycle() {
   el.style.background = sketches[lastSketchType].targetBg
   document.getElementById("container").style.background = sketches[nextSketchType].targetBg
   el.classList.add("fade-out")
-  setTimeout(startSketch, 1000)
+  setTimeout(startSketch, 500)
 }
 
 function startSketch() {
   createSketch()
-  setTimeout(completeCycle, 1000)
+  setTimeout(completeCycle, 500)
 }
 
 function completeCycle(timer = 10000) {
