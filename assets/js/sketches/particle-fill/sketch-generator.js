@@ -27,7 +27,7 @@ ParticleFill = {
         fonts = {
           wide: {
             font: p.loadFont(`assets/fonts/SpaceTypeSans-wide.otf`),
-            scale: initSize => (2 * initSize) / 3
+            scale: initSize => initSize
           },
           regular: {
             font: p.loadFont(`assets/fonts/SpaceTypeSans-Regular.otf`),
@@ -89,7 +89,7 @@ ParticleFill = {
         points = points.map(centerPt)
         doDrawShapeOnTextLayer(textLayer)
 
-        let step = initSize / 100
+        let step = initSize / 70
         pointRadius = initSize / 300
 
         let offset = 2
@@ -325,9 +325,6 @@ ParticleFill = {
             v.setMag(m)
             this.vx = v.x
             this.vy = v.y
-          } else if (d < initSize / 26) {
-            this.vx = this.body.velocity.x * 0.6
-            this.vy = this.body.velocity.y * 0.6
           } else {
             let dx = this.dest.x - this.body.position.x
             let dy = this.dest.y - this.body.position.y
