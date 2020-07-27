@@ -64,6 +64,13 @@ Blobs = {
         constructor(p, x, y, radius) {
           this.p = p
           this.pts = []
+          this.radius = radius
+          this.center = {
+            x: x,
+            y: y,
+            vx: p.random(-1, 1),
+            vy: p.random(-1, 1)
+          }
 
           let rand = p.random(1)
           if (rand < 0.1) {
@@ -84,54 +91,19 @@ Blobs = {
             let pt = {
               sx,
               sy,
-              body: Bodies.circle(sx, sy, 1, {
-                collisionFilter: {
-                  category: p.random(10000)
-                },
-                friction: 0.0,
-                restitution: 0.95,
-                density: 1
-              })
+              frequency: this.p.random(5, 12),
+              angle: 0
             }
 
-            Matter.Body.setVelocity(pt.body, {
-              x: p.random(-1, 1),
-              y: p.random(-1, 1)
-            })
-
-            World.add(world, pt.body)
             this.pts.push(pt)
           }
-
-          for (let i = 0; i < this.pts.length - 2; i++) {
-            let nextPt = this.pts[i + 1]
-            let d = p.dist(
-              this.pts[i].body.position.x,
-              this.pts[i].body.position.y,
-              nextPt.body.position.x,
-              nextPt.body.position.y
-            )
-            addConstraint(this.pts[i].body, nextPt.body, d)
-          }
-
-          let d = p.dist(
-            this.pts[this.pts.length - 1].body.position.x,
-            this.pts[this.pts.length - 1].body.position.y,
-            this.pts[0].body.position.x,
-            this.pts[0].body.position.y
-          )
-          // Close off the last shape
-          addConstraint(this.pts[this.pts.length - 1].body, this.pts[0].body, d)
         }
 
         draw() {
           this.p.noStroke()
 
           let dist = this.p
-            .createVector(
-              this.pts[0].body.position.x - this.p.width / 2,
-              this.pts[0].body.position.y - this.p.height / 2
-            )
+            .createVector(this.center.x - this.p.width / 2, this.center.y - this.p.height / 2)
             .mag()
 
           let transp = this.p.map(
@@ -146,45 +118,51 @@ Blobs = {
           this.color.setAlpha(transp)
           this.p.fill(this.color)
 
+          this.p.curveTightness(Math.sin(0.001 * this.p.frameCount))
           this.p.beginShape()
+
+          this.center.x += this.center.vx
+          this.center.y += this.center.vy
+
+          let canvasMouseX = this.p.mouseX / scale
+          let canvasMouseY = this.p.mouseY / scale
+          let d = this.p.dist(this.center.x, this.center.y, canvasMouseX, canvasMouseY)
+          if (d <= initSize / 5) {
+            let maxm = initSize
+            let v = this.p.createVector(this.center.x - canvasMouseX, this.center.y - canvasMouseY)
+            let m = this.p.map(v.mag(), 0, maxm, 1, 0)
+            v.setMag(m)
+            this.center.vx += v.x * 2
+            this.center.vy += v.y * 2
+          }
+
+          let npoints = 20
+
+          let angleStep = (2 * Math.PI) / npoints
+          let angle = 0
+          let firstX, firstY
           for (let pt of this.pts) {
-            let dx = pt.sx - pt.body.position.x
-            let dy = pt.sy - pt.body.position.y
+            let x =
+              this.center.x +
+              Math.cos(angle) * this.radius +
+              Math.sin(this.p.radians(pt.angle)) * this.p.random(1, 1)
 
-            let vx = pt.body.velocity.x + dx / 50
-            let vy = pt.body.velocity.y + dy / 50
+            let y =
+              this.center.y +
+              Math.sin(angle) * this.radius +
+              Math.sin(this.p.radians(pt.angle)) * this.p.random(1, 1)
+            angle += angleStep
 
-            let canvasMouseX = this.p.mouseX / scale
-            let canvasMouseY = this.p.mouseY / scale
-            let d = this.p.dist(pt.body.position.x, pt.body.position.y, canvasMouseX, canvasMouseY)
-            if (d <= initSize / 5) {
-              let maxm = initSize
-              let v = this.p.createVector(
-                pt.body.position.x - canvasMouseX,
-                pt.body.position.y - canvasMouseY
-              )
-              let m = this.p.map(v.mag(), 0, maxm, 1, 0)
-              v.setMag(m)
-              vx = v.x
-              vy = v.y
-              this.sx += v.x
-              this.sy += v.y
+            this.p.curveVertex(x - this.p.width / 2, y - this.p.height / 2)
+
+            if (!firstX) {
+              firstX = x - this.p.width / 2
+              firstY = y - this.p.height / 2
             }
 
-            Matter.Body.setVelocity(pt.body, {
-              x: vx,
-              y: vy
-            })
-
-            this.p.curveVertex(
-              pt.body.position.x - this.p.width / 2,
-              pt.body.position.y - this.p.height / 2
-            )
+            pt.angle += pt.frequency
           }
-          this.p.curveVertex(
-            this.pts[0].body.position.x - this.p.width / 2,
-            this.pts[0].body.position.y - this.p.height / 2
-          )
+          this.p.curveVertex(firstX, firstY)
           this.p.endShape()
         }
       }
