@@ -5,6 +5,9 @@ let nextSketchType = 0
 let currentp5
 let nextp5
 
+let paused = false
+let lastAction
+
 function shuffle(array) {
   array.sort(() => Math.random() - 0.5)
 }
@@ -49,5 +52,5 @@ function completeCycle(timer = 10000) {
 document.addEventListener("DOMContentLoaded", function(event) {
   createSketch()
   document.getElementById("container").style.background = sketches[lastSketchType].targetBg
-  completeCycle(8000)
+  completeCycle(5000)
 })
