@@ -37,17 +37,17 @@ function startSketch() {
   setTimeout(completeCycle, 1000)
 }
 
-function completeCycle() {
+function completeCycle(timer = 15000) {
   if (currentp5) {
     currentp5.remove()
   }
 
   currentp5 = nextp5
-  setTimeout(startCycle, 15000)
+  setTimeout(startCycle, timer)
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
   createSketch()
   document.getElementById("container").style.background = sketches[lastSketchType].targetBg
-  completeCycle()
+  completeCycle(8000)
 })
