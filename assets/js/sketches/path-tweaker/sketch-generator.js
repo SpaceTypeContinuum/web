@@ -3,6 +3,7 @@ PathTweaker = {
   createSketch: function(divId) {
     let sketch = function(p) {
       let txt = "SPACETYPE"
+      let p5font
       let font
       let fontData
       let path
@@ -11,7 +12,7 @@ PathTweaker = {
       let drawLayer
       let uiLayer
 
-      let scale
+      let scale = 1
       let initSize
       let fontSize
       let bounds
@@ -80,6 +81,7 @@ PathTweaker = {
 
       p.preload = function() {
         fontData = p.loadBytes("assets/fonts/SpaceTypeSans-wide.otf")
+        p5font = p.loadFont("assets/fonts/SpaceTypeSans-wide.otf")
       }
 
       p.setup = function() {
@@ -100,8 +102,8 @@ PathTweaker = {
         let closestSegment = null
         let closestDistance = Infinity
         let mousePt = {
-          x: p.mouseX - p.width / 4,
-          y: p.mouseY - (3 * p.height) / 4
+          x: (p.mouseX - p.width / 2) / scale,
+          y: (p.mouseY - p.height / 2) / scale
         }
 
         for (let seg of path.commands) {
@@ -125,8 +127,8 @@ PathTweaker = {
 
       function moveHandle(segment) {
         if (p.mouseIsPressed) {
-          segment.x1 = p.mouseX - p.width / 4
-          segment.y1 = p.mouseY - (3 * p.height) / 4
+          segment.x1 = (p.mouseX - p.width / 2) / scale
+          segment.y1 = (p.mouseY - p.height / 2) / scale
         }
       }
 
@@ -183,13 +185,15 @@ PathTweaker = {
         drawLayer.stroke(255)
         drawLayer.strokeWeight(1)
         drawLayer.push()
-        drawLayer.translate(p.width / 4, (3 * p.height) / 4)
+        drawLayer.translate(p.width / 2, p.height / 2)
+        drawLayer.scale(scale)
         drawPathOutline(path.commands, drawLayer)
         drawLayer.pop()
 
         uiLayer.clear()
         uiLayer.push()
-        uiLayer.translate(p.width / 4, (3 * p.height) / 4)
+        uiLayer.translate(p.width / 2, p.height / 2)
+        uiLayer.scale(scale)
         drawSegment(mouseOverSegment)
         uiLayer.pop()
 
@@ -199,7 +203,8 @@ PathTweaker = {
         historyLayer.noFill()
         historyLayer.stroke("white")
         historyLayer.push()
-        historyLayer.translate(p.width / 4, (3 * p.height) / 4)
+        historyLayer.translate(p.width / 2, p.height / 2)
+        historyLayer.scale(scale)
         drawPathOutline(path.commands, historyLayer, true)
         historyLayer.pop()
         historyLayer.blendMode(p.REMOVE)
@@ -210,6 +215,9 @@ PathTweaker = {
       p.windowResized = function() {
         let div = document.getElementById(divId)
         p.resizeCanvas(div.offsetWidth, div.clientHeight)
+        drawLayer.resizeCanvas(p.width, p.height)
+        historyLayer.resizeCanvas(p.width, p.height)
+        uiLayer.resizeCanvas(p.width, p.height)
         scale = Math.min(p.width, p.height) / initSize
       }
 
@@ -217,8 +225,9 @@ PathTweaker = {
         initSize = Math.min(p.width, p.height)
         console.log(initSize)
         fontSize = (2 * initSize) / 3
+        let bounds = p5font.textBounds(txt, 0, 0, fontSize)
         font = opentype.parse(fontData.bytes.buffer)
-        path = font.getPath(txt, 0, 0, fontSize)
+        path = font.getPath(txt, -bounds.w / 2, bounds.h / 2, fontSize)
       }
     }
     return sketch
