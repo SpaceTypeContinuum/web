@@ -118,6 +118,10 @@ a {
   color: #ffffff55;
 }
 
+.link:hover {
+  color: white;
+}
+
 #about {
   background-color: #161616;
   width: 100%;
