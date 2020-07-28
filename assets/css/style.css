@@ -112,8 +112,6 @@ a {
 }
 
 .link {
-  margin: 2em 3em;
-  font-size: 1.2rem;
   display: inline-block;
   align-self: flex-start;
   color: #ffffff55;
@@ -158,6 +156,34 @@ p {
   font-size: 1.4em;
   margin-bottom: 2em;
   color: white;
+}
+
+#nav-area {
+  margin: 2em 3em;
+  font-size: 1.2rem;
+}
+
+#progress {
+  width: 1%;
+  background-color: #ffffff55;
+  height: 1px;
+  margin-bottom: 0.5em;
+}
+#nav-box {
+  display: flex;
+}
+
+#play-box {
+  margin-right: 1.5em;
+  display: flex;
+}
+
+#play {
+  margin-right: 1.5em;
+  font-size: 0.8rem;
+  display: inline-block;
+  align-self: center;
+  color: #ffffff55;
 }
 
 @media (max-width: 1048px) {

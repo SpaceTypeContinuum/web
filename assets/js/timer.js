@@ -8,6 +8,13 @@ let nextp5
 let paused = false
 let lastAction
 
+let nextAction
+let lastHook
+
+let hookDuration
+let hookStartTimeMS
+let remainingTimeToAction
+
 function shuffle(array) {
   array.sort(() => Math.random() - 0.5)
 }
@@ -22,6 +29,8 @@ function createSketch() {
 }
 
 function startCycle() {
+  document.getElementById("progress").style.width = "0%"
+
   let el
   if (currentp5._elements.length > 0) {
     el = currentp5._elements[0].canvas
@@ -32,12 +41,19 @@ function startCycle() {
   el.style.background = sketches[lastSketchType].targetBg
   document.getElementById("container").style.background = sketches[nextSketchType].targetBg
   el.classList.add("fade-out")
-  setTimeout(startSketch, 500)
+
+  hookStartTimeMS = new Date().getTime()
+  remainingTimeToAction = 500
+  nextAction = startSketch
+  lastHook = setTimeout(startSketch, 500)
 }
 
 function startSketch() {
   createSketch()
-  setTimeout(completeCycle, 500)
+  hookStartTimeMS = new Date().getTime()
+  remainingTimeToAction = 500
+  nextAction = completeCycle
+  lastHook = setTimeout(completeCycle, 500)
 }
 
 function completeCycle(timer = 10000) {
@@ -46,11 +62,48 @@ function completeCycle(timer = 10000) {
   }
 
   currentp5 = nextp5
-  setTimeout(startCycle, timer)
+  hookDuration = timer
+  hookStartTimeMS = new Date().getTime()
+  remainingTimeToAction = timer
+  nextAction = setProgress
+  lastHook = setTimeout(setProgress, 10)
+}
+
+function setProgress() {
+  let time = new Date().getTime()
+  remainingTimeToAction -= time - hookStartTimeMS
+  hookStartTimeMS = time
+
+  let width = Math.min(100, (100 * (hookDuration - remainingTimeToAction)) / hookDuration)
+  document.getElementById("progress").style.width = width + "%"
+
+  if (remainingTimeToAction <= 0) {
+    startCycle()
+  } else {
+    lastHook = setTimeout(setProgress, 10)
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
   createSketch()
   document.getElementById("container").style.background = sketches[lastSketchType].targetBg
+  document.getElementById("play").onclick = function() {
+    if (nextAction !== setProgress) {
+      return
+    }
+
+    paused = !paused
+    if (paused) {
+      this.textContent = "►"
+      clearTimeout(lastHook)
+      remainingTimeToAction -= new Date().getTime() - hookStartTimeMS
+    } else {
+      this.textContent = "❚❚"
+      hookStartTimeMS = new Date().getTime()
+      setTimeout(nextAction, 10)
+    }
+
+    return false
+  }
   completeCycle(5000)
 })
