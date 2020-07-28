@@ -262,7 +262,6 @@ PathTweaker = {
 
       function refreshCanvas() {
         initSize = Math.min(p.width, p.height)
-        console.log(initSize)
         setFont()
         let bounds = font.p5font.textBounds(txt, 0, 0, fontSize)
         parsedFont = opentype.parse(font.fontData.bytes.buffer)

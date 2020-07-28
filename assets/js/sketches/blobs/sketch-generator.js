@@ -235,7 +235,6 @@ Blobs = {
               return new Point(p, pt.x, pt.y, body)
             })
 
-          console.log(points.length)
           setupPointConstraints()
           charBoundaries = getCharacterBoundaries({
             text: txt,
