@@ -173,8 +173,8 @@ PathTweaker = {
         }
 
         if (isMousedOver) {
-          uiLayer.fill("#37f79b")
-          uiLayer.stroke("#37f79b")
+          uiLayer.fill("#fce435")
+          uiLayer.stroke("#fce435")
           uiLayer.strokeWeight(2)
         } else {
           uiLayer.fill("black")
@@ -239,7 +239,7 @@ PathTweaker = {
         p.image(drawLayer, 0, 0)
         p.image(uiLayer, 0, 0)
         historyLayer.noFill()
-        historyLayer.stroke("#fce435")
+        historyLayer.stroke("#37f79b")
         historyLayer.push()
         historyLayer.translate(p.width / 2, p.height / 2)
         historyLayer.scale(scale)
