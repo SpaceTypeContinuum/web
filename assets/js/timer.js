@@ -100,10 +100,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     paused = !paused
     if (paused) {
       this.textContent = "►"
+      this.style.color = "white"
       clearTimeout(lastHook)
       remainingTimeToAction -= new Date().getTime() - hookStartTimeMS
     } else {
       this.textContent = "❚❚"
+      this.style.color = "#ffffff55"
       hookStartTimeMS = new Date().getTime()
       setTimeout(nextAction, 10)
     }
