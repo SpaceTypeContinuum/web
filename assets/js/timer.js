@@ -29,8 +29,6 @@ function createSketch() {
 }
 
 function startCycle() {
-  document.getElementById("progress").style.width = "0%"
-
   let el
   if (currentp5._elements.length > 0) {
     el = currentp5._elements[0].canvas
@@ -57,6 +55,10 @@ function startSketch() {
 }
 
 function completeCycle(timer = 10000) {
+  let elem = document.getElementById("progress")
+  elem.style.width = "0%"
+  elem.style.opacity = 1
+  elem.classList.remove("fade-out")
   if (currentp5) {
     currentp5.remove()
   }
@@ -75,11 +77,14 @@ function setProgress() {
   hookStartTimeMS = time
 
   let width = Math.min(100, (100 * (hookDuration - remainingTimeToAction)) / hookDuration)
-  document.getElementById("progress").style.width = width + "%"
+  let elem = document.getElementById("progress")
 
   if (remainingTimeToAction <= 0) {
+    elem.style.width = "100%"
+    elem.classList.add("fade-out")
     startCycle()
   } else {
+    elem.style.width = width + "%"
     lastHook = setTimeout(setProgress, 10)
   }
 }
