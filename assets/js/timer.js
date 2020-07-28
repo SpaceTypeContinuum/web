@@ -54,7 +54,7 @@ function startSketch() {
   lastHook = setTimeout(completeCycle, 500)
 }
 
-function completeCycle(timer = 10000) {
+function completeCycle(timer = 8000) {
   let elem = document.getElementById("progress")
   elem.style.width = "0%"
   elem.style.opacity = 1
