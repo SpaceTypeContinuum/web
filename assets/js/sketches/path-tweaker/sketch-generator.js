@@ -19,6 +19,8 @@ PathTweaker = {
       let bounds
       let lastWindowResize
 
+      let selectedSegment
+
       function setFont() {
         let aspect = p.width / p.height
         if (aspect < 0.8) {
@@ -144,8 +146,8 @@ PathTweaker = {
             continue
           }
           let handlePt = {
-            x: seg.x1,
-            y: seg.y1
+            x: seg.x,
+            y: seg.y
           }
 
           let d = p.dist(mousePt.x, mousePt.y, handlePt.x, handlePt.y)
@@ -166,7 +168,7 @@ PathTweaker = {
       }
 
       function drawSegment(seg, isMousedOver = true) {
-        let handleX = seg.x1 + seg.animx1
+        let handleX = seg.x1 // + seg.animx1
         let handleY = seg.y1
         if (!handleX) {
           return
@@ -184,8 +186,18 @@ PathTweaker = {
           uiLayer.strokeWeight(2)
         }
 
-        uiLayer.line(seg.x, seg.y, handleX, handleY)
-        uiLayer.ellipse(handleX, handleY, 5)
+        if (p.mouseIsPressed) {
+          uiLayer.line(
+            seg.x,
+            seg.y,
+            (p.mouseX - p.width / 2) / scale,
+            (p.mouseY - p.height / 2) / scale
+          )
+          uiLayer.ellipse(handleX, handleY, 5)
+        } else {
+          uiLayer.line(seg.x, seg.y, handleX + seg.animx1, handleY)
+          uiLayer.ellipse(handleX + seg.animx1, handleY, 5)
+        }
 
         handleX = seg.x2 - seg.animx1
         handleY = seg.y2
@@ -211,7 +223,15 @@ PathTweaker = {
         }
 
         let mouseOverSegment = closestSegment()
-        moveHandle(mouseOverSegment)
+        if (!p.mouseIsPressed) {
+          selectedSegment = null
+        } else {
+          if (!selectedSegment) {
+            selectedSegment = mouseOverSegment
+          }
+
+          moveHandle(selectedSegment)
+        }
 
         for (let seg of path.commands) {
           moveSegment(seg)
@@ -232,7 +252,7 @@ PathTweaker = {
         uiLayer.push()
         uiLayer.translate(p.width / 2, p.height / 2)
         uiLayer.scale(scale)
-        drawSegment(mouseOverSegment)
+        drawSegment(selectedSegment || mouseOverSegment)
         uiLayer.pop()
 
         p.image(historyLayer, 0, 0)
