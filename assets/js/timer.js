@@ -99,7 +99,7 @@ function setPlayWidth() {
     setTimeout(setPlayWidth, 100)
   }
 
-  playElement.style.width = width + "px"
+  playElem.style.width = width + "px"
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
