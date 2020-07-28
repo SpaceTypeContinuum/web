@@ -92,20 +92,21 @@ function setProgress() {
 document.addEventListener("DOMContentLoaded", function(event) {
   createSketch()
   document.getElementById("container").style.background = sketches[lastSketchType].targetBg
-  document.getElementById("play").onclick = function() {
+
+  let playElem = document.getElementById("play")
+  playElem.style.width = (document.getElementById("about").clientHeight * 3) / 4 + "px"
+  playElem.onclick = function() {
     if (nextAction !== setProgress) {
       return
     }
 
     paused = !paused
     if (paused) {
-      this.textContent = "►"
-      this.style.color = "white"
+      this.src = "assets/img/play.svg"
       clearTimeout(lastHook)
       remainingTimeToAction -= new Date().getTime() - hookStartTimeMS
     } else {
-      this.textContent = "❚❚"
-      this.style.color = "#ffffff55"
+      this.src = "assets/img/pause.svg"
       hookStartTimeMS = new Date().getTime()
       setTimeout(nextAction, 10)
     }

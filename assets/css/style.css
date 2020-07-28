@@ -184,6 +184,7 @@ p {
   display: inline-block;
   align-self: center;
   color: #ffffff55;
+  cursor: pointer;
 }
 
 @media (max-width: 1048px) {
