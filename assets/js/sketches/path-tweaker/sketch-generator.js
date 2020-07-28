@@ -239,7 +239,7 @@ PathTweaker = {
         p.image(drawLayer, 0, 0)
         p.image(uiLayer, 0, 0)
         historyLayer.noFill()
-        historyLayer.stroke("white")
+        historyLayer.stroke("#fce435")
         historyLayer.push()
         historyLayer.translate(p.width / 2, p.height / 2)
         historyLayer.scale(scale)
