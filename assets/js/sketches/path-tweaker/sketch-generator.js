@@ -11,6 +11,7 @@ PathTweaker = {
       let historyLayer
       let drawLayer
       let uiLayer
+      let startedAt
 
       let scale = 1
       let initSize
@@ -42,10 +43,17 @@ PathTweaker = {
         // start position of current contour
         let startX = 0
         let startY = 0
+
+        if (!startedAt) {
+          startedAt = p.millis()
+        }
+
+        let max = Math.round(p.map(p.millis(), startedAt, startedAt + 4000, 0, cmds.length))
+
         let i = 0
         for (let cmd of cmds) {
           i += 1
-          if (p.frameCount < i * 2) {
+          if (i >= max) {
             break
           }
           switch (cmd.type) {
