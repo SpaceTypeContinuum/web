@@ -89,12 +89,26 @@ function setProgress() {
   }
 }
 
+function setPlayWidth() {
+  let playElem = document.getElementById("play")
+  let width = (document.getElementById("about").clientHeight * 3) / 4
+
+  // Hack hack hack sorry onlookers
+  if (width < 1) {
+    width = 19.5
+    setTimeout(setPlayWidth, 100)
+  }
+
+  playElement.style.width = width + "px"
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
   createSketch()
   document.getElementById("container").style.background = sketches[lastSketchType].targetBg
 
+  setPlayWidth()
+
   let playElem = document.getElementById("play")
-  playElem.style.width = (document.getElementById("about").clientHeight * 3) / 4 + "px"
   playElem.onclick = function() {
     if (nextAction !== setProgress) {
       return
